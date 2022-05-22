@@ -1,0 +1,151 @@
+
+<system.webServer>
+    <security>
+      <requestFiltering>
+        <requestLimits maxAllowedContentLength="1073741824" />
+      </requestFiltering>
+    </security>
+  </system.webServer>
+  ///////////////////////////////////////////////
+  ////////////////////////////////////////
+  ///////////////////////////////////////////////
+		public ActionResult UploadFile()
+		{
+			try
+			{
+				var ii = Request.Files.AllKeys.Length;
+				for (int i = 0; i < ii; i++)
+				{
+					var UploadFile = Request.Files[i];
+					if (UploadFile != null && UploadFile.ContentLength > 0)
+					{
+
+
+						if (UploadFile.ContentType.ToLower() != "image/jpg" &&
+					   UploadFile.ContentType.ToLower() != "image/jpeg" &&
+					   UploadFile.ContentType.ToLower() != "image/pjpeg" &&
+					   UploadFile.ContentType.ToLower() != "image/gif" &&
+					   UploadFile.ContentType.ToLower() != "image/x-png" &&
+					   UploadFile.ContentType.ToLower() != "application/pdf" &&
+					   UploadFile.ContentType.ToLower() != "image/png")
+						{
+							return Json(new { error = true });
+						}
+						var fileName = "";
+						string fileExtension = System.IO.Path.GetExtension(UploadFile.FileName);
+						string[] formula = fileExtension.Split(new string[] { "." }, StringSplitOptions.None);
+
+						fileName = Path.GetFileName("TEST_" + Guid.NewGuid().ToString().Split('-')[0] + "." + formula[1]);
+
+						//var path = Path.Combine(@"C:/inetpub/wwwroot/DR/JobCards/", fileName);
+						var path = Path.Combine(Server.MapPath("~/FilesUploded/"), fileName);
+						//payment_List.invoices_IMG = fileName;
+						UploadFile.SaveAs(path);
+						ViewBag.Message = "Done.." + i;
+
+					}
+
+				}
+			}
+			catch (Exception e)
+			{
+				ViewBag.Message = e.Message;
+			}
+
+			return Redirect(Request.UrlReferrer.PathAndQuery);
+		}
+
+
+/////////////////////////////////////////
+//////////////////////////////
+////////////////////////////////////////
+
+@{
+	ViewBag.Title = "TestPage";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@ViewBag.Message
+<link href="~/assets/vendors/custom/uppy/uppy.bundle.css" rel="stylesheet" type="text/css">
+@using (Html.BeginForm("UploadFile", "Home", FormMethod.Post, new { @class = "kt-form", enctype = "multipart/form-data" }))
+{
+	@Html.AntiForgeryToken()
+
+	<div class="modal-header">
+		<h5 class="modal-title">invoices_IMG</h5>
+	</div>
+	<div class="modal-body text-center p-lg">
+		<span>
+			<label class="kt-dropzone dropzone dz-clickable" style="width:100%;align-items:center; height:unset; border: 2px dashed #ebedf2" id="m-dropzone-one">
+				<br />
+				<img style=" height: 100px; display: unset; padding: 30px;" src="~/assets/media/svg/icons/Files/Uploaded-file.svg" id="Pic_1">
+				<h3 class="m-dropzone__msg-title">Drop files here or click to upload.</h3>
+				<span class="m-dropzone__msg-desc">Only image and pdf files are allowed for upload</span>
+				<input name="Payment_1" id="btnPic_1" type="file" style="display:none" onchange="readURL(this)" />
+
+			</label>
+			<br />
+			<br />
+
+		</span>
+
+		<span>
+			<label class="kt-dropzone dropzone dz-clickable" style="width:100%;align-items:center; height:unset; border: 2px dashed #ebedf2" id="m-dropzone-one">
+				<br />
+				<img style=" height: 100px; display: unset; padding: 30px;" src="~/assets/media/svg/icons/Files/Uploaded-file.svg" id="Pic_2">
+				<h3 class="m-dropzone__msg-title">Drop files here or click to upload.</h3>
+				<span class="m-dropzone__msg-desc">Only image and pdf files are allowed for upload</span>
+				<input name="Payment_2" id="btnPic_2" type="file" style="display:none" onchange="readURL(this)" />
+
+			</label>
+			<br />
+			<br />
+
+		</span>
+
+		<span>
+			<label class="kt-dropzone dropzone dz-clickable" style="width:100%;align-items:center; height:unset; border: 2px dashed #ebedf2" id="m-dropzone-one">
+				<br />
+				<img style=" height: 100px; display: unset; padding: 30px;" src="~/assets/media/svg/icons/Files/Uploaded-file.svg" id="Pic_3">
+				<h3 class="m-dropzone__msg-title">Drop files here or click to upload.</h3>
+				<span class="m-dropzone__msg-desc">Only image and pdf files are allowed for upload</span>
+				<input name="Payment_3" id="btnPic_3" type="file" style="display:none" onchange="readURL(this)" />
+
+			</label>
+			<br />
+			<br />
+
+		</span>
+	</div>
+	<div class="modal-footer">
+		<button type="submit" class="btn btn-primary">Submit</button>
+		<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+	</div>
+}
+
+<script type="text/javascript">
+
+	function readURL(input) {
+		let text = input.id;
+		const new_id = "#Pic_" + text.split("_")[1];
+		console.log(new_id);
+		var fi = input.files;
+		console.log(fi);
+		if (fi && fi[0]) {
+			var reader = new FileReader();
+			reader.onload = function (e) {
+				console.log(e.target.result);
+				$(new_id).attr('src', e.target.result);
+			}
+
+			reader.readAsDataURL(input.files[0]);
+		}
+	}
+
+	//$("#btnPic").change(function () {
+	//	readURL(this);
+
+	//});
+
+</script>
